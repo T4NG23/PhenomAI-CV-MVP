@@ -1,8 +1,8 @@
 {
-  "name": "interview-integrity-mvp",
+  "name": "phenomitor",
   "version": "0.1.0",
   "private": true,
-  "description": "AI-powered interview monitoring system with observable behavior detection",
+  "description": "AI-powered behavioral monitoring system - by William Hudson Tang",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

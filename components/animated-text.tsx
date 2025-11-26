@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 
-const phrases = ["Nora (Nga) Vu", "Kien Tran", "Warren Yap", "Antonio Franco Laureano"]
+const phrases = ["William Hudson Tang"]
 
 export default function AnimatedText() {
   const maxLength = Math.max(...phrases.map((name) => name.length)) // Find longest name

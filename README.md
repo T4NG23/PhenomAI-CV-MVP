@@ -1,6 +1,8 @@
-# Interview Integrity MVP
+# Phenomitor
 
-An AI-powered interview monitoring system that detects observable behavioral anomalies during remote interviews. The system provides human-readable reports without making claims about intent or truthfulness.
+An AI-powered behavioral monitoring system that detects observable anomalies during remote sessions. The system provides human-readable reports without making claims about intent or truthfulness.
+
+**Developed by William Hudson Tang**
 
 ## Purpose
 
@@ -21,7 +23,7 @@ This system helps interviewers by:
 ## Architecture
 
 ```
-interview-integrity-mvp/
+phenomitor/
 ├── web-client/          # React/TS app with MediaPipe CV models
 ├── api-gateway/         # FastAPI for auth & user management
 ├── realtime-engine/     # Node.js WebSocket server & event fusion
@@ -111,6 +113,20 @@ Perfect for:
 - Python 3.9+
 - Docker & Docker Compose
 - GPU (optional, for faster CV inference)
+
+## Google Cloud Configuration
+
+This project uses Google Cloud services for AI features:
+
+- **Project Name**: PhenomAICV
+- **Project ID**: gen-lang-client-0687044721
+- **Project Number**: 15971132718
+
+To enable Gemini API:
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Select project `gen-lang-client-0687044721`
+3. Create API key
+4. Add to `.env.local` as `GOOGLE_API_KEY=your-key-here`
 
 ## Privacy & Compliance
 
