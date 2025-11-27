@@ -1,195 +1,202 @@
 # Phenomitor
 
-An AI-powered behavioral monitoring system that detects observable anomalies during remote sessions. The system provides human-readable reports without making claims about intent or truthfulness.
+An AI-powered interview monitoring system that detects cheating behaviors during remote interviews using real-time computer vision and Google Gemini AI analysis.
 
 **Developed by William Hudson Tang**
 
 ## Purpose
 
-This system helps interviewers by:
-- Monitoring webcam and audio streams during interviews
-- Detecting observable behavioral patterns (gaze, objects, audio anomalies)
-- Generating post-interview reports with timestamped evidence
-- Providing reviewers with objective data for follow-up questions
+Phenomitor helps interviewers maintain interview integrity by:
+- Real-time monitoring of webcam streams during interviews
+- Detecting suspicious eye movements (reading scripts, looking at notes)
+- Identifying physical cheating indicators (devices, notes, other people)
+- Audio transcript capture for comprehensive analysis
+- 3-strike warning system before alerting interviewer
+- Timestamped evidence with detailed behavioral analysis
 
-## Ethical Framework
+## Features
 
-- **Explicit consent required** - Candidates must opt-in
-- **No intent claims** - System only reports observable behaviors
-- **Human oversight** - All anomalies require human review
-- **Privacy-first** - Local processing option, automatic data deletion
-- **Accessibility** - Accommodation flow for candidates with disabilities
+### Cheating Detection Categories
+
+1. **Eye Movement Patterns**
+   - Horizontal scanning (reading text)
+   - Off-screen glances (phone, notes)
+   - Looking down at desk/lap
+   - Eyes not centered on camera
+
+2. **Physical Indicators**
+   - Visible devices (phones, tablets, smartwatches)
+   - Notes or paper materials
+   - Earbuds/headphones
+   - Multiple people in frame
+   - Second monitors or screens
+
+3. **Behavioral Patterns**
+   - Typing while speaking
+   - Unnatural pauses
+   - Repeated posture changes
+   - Hand movements indicating keyboard use
+
+4. **Audio Analysis**
+   - Speech-to-text transcription
+   - Visual indicators (hands on keyboard, mouth movements)
+
+### Strike System
+
+- **3-strike threshold** before alert
+- Visual strike counter (1/2/3)
+- Strike history with timestamps and reasons
+- Orange notification popups for strikes 1-2
+- Full alert only on 3rd strike
+- Continues monitoring after 3 strikes
+
+### Analysis Modes
+
+- **Demo Mode**: 2 requests/second (~$0.03 for 2-min demo)
+- **Normal Mode**: 6 requests/minute (40-min sessions on free tier)
+- **Conservative Mode**: 3 requests/minute (80-min sessions on free tier)
 
 ## Architecture
 
 ```
 phenomitor/
-├── web-client/          # React/TS app with MediaPipe CV models
-├── api-gateway/         # FastAPI for auth & user management
-├── realtime-engine/     # Node.js WebSocket server & event fusion
-├── cv-inference/        # Python microservice for heavy CV models
-├── vlm-service/         # Python VLM/VQA post-processing
-├── demo-data/           # Pre-recorded sessions for demo mode
-├── infra/               # Docker Compose & deployment configs
-├── docs/                # Architecture & compliance documentation
-└── backend/             # Legacy (to be migrated)
+├── app/                 # Next.js 15 application
+│   ├── pages/
+│   │   └── realtimeStreamPage/  # Main monitoring interface
+│   ├── api/            # API routes
+│   └── layout.tsx      # Root layout with particle background
+├── components/         # React components
+│   ├── ui/            # UI components
+│   └── particle-background.tsx
+├── lib/               # Utilities
+├── public/            # Static assets (logo)
+└── utils/             # Helper functions
 ```
 
 ## Quick Start
 
-### Live Interview Mode
-
 ```bash
-# Start all services
-npm run start:all
+# Install dependencies
+npm install
 
-# Or manually:
-docker-compose up -d
+# Set up environment variables
+cp .env.example .env.local
+# Add your GOOGLE_API_KEY to .env.local
+
+# Run development server
 npm run dev
+
+# Open http://localhost:3000/pages/realtimeStreamPage
 ```
-
-### Demo Mode
-
-```bash
-# Run with pre-recorded demo data
-npm run demo
-
-# This will:
-# 1. Load a pre-recorded interview session
-# 2. Simulate real-time events
-# 3. Generate a sample report
-```
-
-## Demo Mode Features
-
-Demo mode uses pre-recorded data to showcase:
-- Real-time anomaly detection
-- Gaze tracking and off-screen detection
-- Object detection (phone, paper, second monitor)
-- Multi-person detection
-- Audio anomaly flagging
-- VLM-generated reports
-
-Perfect for:
-- Sales demonstrations
-- Testing new features
-- Training interviewers
-- Compliance audits
-
-## Core Features
-
-### Real-time Detection
-- Face detection & head-pose estimation
-- Gaze tracking (on/off screen)
-- Object detection (phone, paper, monitor, other people)
-- Audio monitoring (VAD, overlapping speakers, source changes)
-- Lip-sync verification
-
-### Anomaly Detection
-- Behavioral scoring (gaze, object presence, audio)
-- Baseline modeling per candidate
-- Configurable thresholds
-- Confidence levels
-
-### VLM Post-Processing
-- Natural language explanations
-- Frame-level evidence citations
-- Recruiter-friendly summaries
-- Follow-up question suggestions
 
 ## Tech Stack
 
-- **Frontend**: React, TypeScript, MediaPipe, TensorFlow.js
-- **Backend**: FastAPI (Python), Node.js (real-time)
-- **CV Models**: MediaPipe, YOLO, custom pose detection
-- **VLM**: LLaVA/Qwen-VL compatible models
-- **Storage**: PostgreSQL, S3-compatible object store
-- **Real-time**: WebSockets (Socket.io)
-- **Deployment**: Docker, Docker Compose
+- **Framework**: Next.js 15 (App Router)
+- **UI**: React 19, TypeScript, Tailwind CSS
+- **AI Analysis**: Google Gemini 2.5 Flash API
+- **Computer Vision**: TensorFlow.js, MediaPipe (face/pose detection)
+- **Speech**: Web Speech API (browser-based transcription)
+- **Particles**: react-particles with tsparticles
+- **Icons**: Lucide React
 
 ## Requirements
 
 - Node.js 18+
-- Python 3.9+
-- Docker & Docker Compose
-- GPU (optional, for faster CV inference)
+- Modern web browser with webcam and microphone
+- Google Gemini API key (free tier: 15 req/min, 250 req/day)
 
-## Google Cloud Configuration
+## Google Gemini API Setup
 
-This project uses Google Cloud services for AI features:
+1. Visit [Google AI Studio](https://aistudio.google.com/apikey)
+2. Create a new API key (or use existing project)
+3. Create `.env.local` in project root:
+   ```
+   GOOGLE_API_KEY=your-api-key-here
+   GCP_PROJECT_ID=your-project-id
+   GCP_PROJECT_NAME=your-project-name
+   ```
+4. API key should be set to "Don't restrict key" for development
 
-- **Project Name**: PhenomAICV
-- **Project ID**: gen-lang-client-0687044721
-- **Project Number**: 15971132718
+### API Limits (Free Tier)
+- **15 requests/minute**
+- **250 requests/day**
+- Model: `gemini-2.5-flash`
 
-To enable Gemini API:
-1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Select project `gen-lang-client-0687044721`
-3. Create API key
-4. Add to `.env.local` as `GOOGLE_API_KEY=your-key-here`
+## Usage
 
-## Privacy & Compliance
+1. Navigate to `/pages/realtimeStreamPage`
+2. Select analysis mode (Demo/Normal/Conservative)
+3. Click "Start Analysis" to begin monitoring
+4. System will analyze frames and detect suspicious behaviors
+5. Strike counter shows warnings (1/2/3)
+6. Alert triggered on 3rd strike
+7. Click "Stop Analysis" to end session
 
-- GDPR/CCPA compliant data handling
-- Encrypted storage and transmission
-- Configurable data retention
-- Audit logging
-- DSAR export tools
-- Consent management
+## Strike System Behavior
 
-## Event Schema
+- **Strike 1-2**: Orange notification popup (5 seconds)
+- **Strike 3**: Full alert with detailed message
+- **Post-Strike**: Continues monitoring and logging
+- **Strike History**: Timestamped list of all infractions
 
-```json
-{
-  "session_id": "sess-123",
-  "timestamp": "2025-11-25T14:05:02Z",
-  "frame_id": "f-0001",
-  "face_bbox": [x, y, w, h],
-  "head_pose": {"yaw": -12.2, "pitch": 3.4, "roll": 0.7},
-  "gaze_vector": [0.2, -0.8],
-  "objects": [{"label": "phone", "confidence": 0.85}],
-  "audio_vad": true
+## Customization
+
+### Adjust Analysis Interval
+Edit `app/pages/realtimeStreamPage/page.tsx`:
+```typescript
+const intervalTimes = {
+  demo: 500,      // milliseconds
+  normal: 10000,
+  conservative: 20000
 }
 ```
 
-## Building the Executable
+### Modify Detection Prompt
+Edit `app/pages/realtimeStreamPage/actions.ts` to customize cheating detection criteria.
 
-Create a standalone executable for distribution:
+### Change Strike Threshold
+Search for `currentStrike === 3` in page.tsx to modify alert trigger.
 
-```bash
-npm run build:exe
+## Project Structure
+
+```
+├── app/
+│   ├── pages/realtimeStreamPage/
+│   │   ├── page.tsx              # Main monitoring UI
+│   │   └── actions.ts            # Gemini API integration
+│   ├── layout.tsx                 # Root layout with particles
+│   └── page.tsx                   # Home page
+├── components/
+│   ├── particle-background.tsx    # Animated background
+│   ├── home-link.tsx              # Logo + nav link
+│   └── ui/                        # Shadcn components
+├── public/
+│   └── phenom-white-optimized.webp # Logo
+└── .env.local                     # API keys (not in git)
 ```
 
-This creates a portable package in the `dist` folder containing:
-- Start/stop scripts for Windows, macOS, and Linux
-- All necessary Docker images
-- Configuration files
-- Documentation
-
-## Testing
+## Development
 
 ```bash
-# Run all tests
-npm test
+# Install dependencies
+npm install
 
-# Run E2E demo test
-npm run test:e2e:demo
+# Run dev server
+npm run dev
 
-# Privacy compliance tests
-npm run test:privacy
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-## Documentation
+## Known Limitations
 
-- [Architecture Overview](./docs/architecture.md)
-- [Privacy & Ethics](./docs/privacy.md)
-- [API Reference](./docs/api.md)
-- [Deployment Guide](./docs/deployment.md)
-- [Demo Mode Guide](./docs/demo-mode.md)
-
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
+- **Speech API**: Only transcribes spoken words, not ambient sounds (typing, whispering)
+- **Free Tier**: 250 requests/day limit (resets midnight Pacific Time)
+- **Detection**: Optimized for sustained patterns (10+ seconds), may miss brief glances
+- **Camera Position**: Works best with camera at eye level
 
 ## License
 
@@ -197,4 +204,8 @@ See [LICENSE](./LICENSE) file.
 
 ## Important Notice
 
-This system is designed to **support human decision-making**, not replace it. All flagged anomalies must be reviewed by qualified human reviewers. The system does not determine guilt, truthfulness, or intent.
+This system is designed to **assist human interviewers**, not replace them. All flagged behaviors should be reviewed by qualified personnel. The system reports observable behaviors only and does not determine intent, guilt, or truthfulness.
+
+---
+
+**Copyright © 2025 William Hudson Tang. All Rights Reserved.**

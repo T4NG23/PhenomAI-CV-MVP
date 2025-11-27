@@ -769,6 +769,40 @@ export default function Page() {
               </p>
             </div>
 
+            {/* Analysis Mode Selector */}
+            <div className="flex justify-center gap-2 mb-4">
+              <button
+                onClick={() => setAnalysisMode('demo')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  analysisMode === 'demo' 
+                    ? 'bg-purple-600 text-white' 
+                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                }`}
+              >
+                Demo (2 req/sec)
+              </button>
+              <button
+                onClick={() => setAnalysisMode('normal')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  analysisMode === 'normal' 
+                    ? 'bg-purple-600 text-white' 
+                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                }`}
+              >
+                Normal (6 req/min)
+              </button>
+              <button
+                onClick={() => setAnalysisMode('conservative')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  analysisMode === 'conservative' 
+                    ? 'bg-purple-600 text-white' 
+                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                }`}
+              >
+                Conservative (3 req/min)
+              </button>
+            </div>
+
             <div className="space-y-4">
               <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-900">
                 {isInitializing && (
